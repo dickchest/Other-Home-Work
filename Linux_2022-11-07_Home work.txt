@@ -1,0 +1,9 @@
+Mon Nov  7 19:33:28 UTC 2022
+6.0G
+ 1005  df / -h
+ 1006  df / -h | awk '{print $3}'
+ 1007  df / -h | awk '{print $3}' | tail -1
+ 1008  df / -h | awk '{print $3}' | tail -1 >> file
+ 1009  history | tail -5 >> file
+GenuineIntel
+118
