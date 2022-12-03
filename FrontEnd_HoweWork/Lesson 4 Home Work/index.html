@@ -7,46 +7,85 @@
     <title>От винта</title>
     <link href="./styles/reset.css" rel="stylesheet">
     <link href="./styles/main.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;900&family=Roboto:wght@100;400;700;900&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <header class="header">
-        <img class="header__logo" src="./img/29254_original.gif" alt="крутящийся винт">
-        <p class="header__text">Туристическое агенство</p>
-        <h3>ОТ ВИНТА</h3>
-        <a href="./index.html">Главная</a>
-        <a href="./description.html">О нас</a>
+      <table class="table__header">
+        <tbody>
+          <tr>
+            <th>
+              <img class="header__logo" src="./img/29254_original.gif" alt="крутящийся винт">
+            </th>
+            <th>
+              <p class="header__text">Туристическое агенство</p>
+              <h3>ОТ ВИНТА</h3>
+              <div class="header__menu">
+                <a href="./index.html">Главная</a>
+                <a href="./description.html">О нас</a>
+                <a href="./price-list.html">Цены</a>
+              </div>
+            </th>
+          </tr>
+        </tbody>
+      </table>
     </header>
     
     <main>
         <h1>Главная</h1>
-        <div class="country">
+        <article class="country card">
             <img src="./img/turkey.webp" alt="Turkey">
             <h4>Турция</h4>
             <p>Турция является одной из лучших туристических стран мира. Большинство туристов, приезжающих на отдых в Турцию проводить свой отпуск на море, но по этой стране можно бесконечно путешествовать, при этом она будет удивлять вас снова и снова. Например Стамбул находится в первой десятке туристических городов мира, а в центральной части Турции раскинулась удивительно красивая и необычная область, называемая Каппадокией. На сайте рассказывается именно о достопримечательностях этих и многих других мест в Турции. Этот сайт посвящается всем любителям путешествий, всем кто желает узнать больше нового о Каппадокии и Турции.</p>    
-        </div>
-        <div class="country">
+        </article>
+
+        <article class="country card">
             <img src="./img/Egypt.jpg" alt="Egypt">
             <h4>Египет</h4>
             <p>Египет – древнее государство с богатым культурным наследием и традициями. Здесь на высоком уровне развита туристическая инфраструктура. Страна у многих людей ассоциируется не только с, богатым коралловыми рифами, Красным морем, широкими песчаными пляжами, солнцем и высококлассными отелями, но и знаменитыми достопримечательностями — пирамидами и святой горой Моисея. Их стоит, хотя бы раз в жизни, увидеть собственными глазами. О том, какому египетскому курорту отдать предпочтение и что посмотреть в Арабской республике, расскажет "От".</p>
-        </div>
+        </article>
         
-        <div class="country">
+        <article class="country card">
             <img src="./img/maldiv.jpg" alt="Egypt">
             <h4>Мальдивы</h4>
             <p>Мальдивские острова сегодня по праву считаются лучшим экзотическим направлением для туристов. Эта удивительная страна состоит из 1190 небольших островов (а точнее, атоллов), которые как нельзя лучше подходят для достойного пляжного отдыха. Следует сказать, что отдых на Мальдивах по карману не каждому. Местные туристы делятся на три категории: молодые влюбленные пары, которым никто, кроме друг друга, не нужен, обеспеченные дайверы, являющиеся самыми непритязательными туристами, и ценители расслабленного отдыха в окружении восхитительной местной природы тропического рая.
                 Пляжи на Мальдивских островах заслуженно считаются самыми живописными на Земле. Изумительно чистая вода, белый песок, укромные бухты и обширные участки побережья - все это способствует созданию образа райского уголка. Отдых здесь подразумевает общение с чарующей своей красотой природой. На одном острове, как правило, располагается один отель. При этом как острова, так и отели удивительно разнообразны. Сразу из аэропорта столицы Мальдив – Мале туристы отправляются на свой остров на гидросамолете или скоростном катере.
                 Столица Мальдив – Мале. Основные курорты: атолл Ари, атолл Вааву, атолл Лавиани, атолл Мииму, атоллы Северный и Южный Мале, атоллы Раа и Баа, атоллы Шавиани и Нуну, атолл Фаафу, атолл Лааму, атолл Хаа-Алифу.
             </p>
-        </div>
+        </article>
     </main>
     
     <footer>
         <p style="font-style: italic">Туристическое агентво "От Винта"</p>
         <p><span style="font-weight:bold">Адрес:</span> Kurfürstenstraße 75, 10787 Berlin</p>
         <p><span style="font-weight:bold">Тел.:</span> 0302621313</p>
-        <a class="footer__href" href="http://twitter.com" target="_blank">Твитер</a>
-        <a class="footer__href" href="http://facebook.com" target="_blank">Фейсбук</a>
+        <a class="footer__href" href="http://twitter.com" target="_blank">
+            <img class="footer__img"
+              src="./img/Cocial Network/twitter.png"
+              alt="twitter"
+            />
+        </a>
+        <a class="footer__href" href="http://facebook.com" target="_blank">
+            <img class="footer__img" 
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/768px-Facebook_f_logo_%282019%29.svg.png" 
+              alt="facebook"
+            />
+        </a>
+        <a class="footer__href" href="http://instagram.com" target="_blank">
+          <img class="footer__img" 
+            src="./img/Cocial Network/instagram.png" 
+            alt="instagram"
+          />
+        </a>
+        <a class="footer__href" href="http://youtube.com" target="_blank">
+          <img class="footer__img" 
+            src="./img/Cocial Network/youtube.png" 
+            alt="youtube"
+          />
+        </a>
     </footer>
     
 </body>
