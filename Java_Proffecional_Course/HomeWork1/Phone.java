@@ -14,7 +14,7 @@ public class Phone {
     }
 
     // метод, выводит имя звонящего
-    public void ReceiveCall(String name) {
+    public void receiveCall(String name) {
         System.out.printf("Звонит %s\n", name);
     }
 

@@ -16,11 +16,11 @@ public class Main {
 
         peter.setFullName("Peter");
 
-        peter.Move();
-        peter.Talk();
+        peter.move();
+        peter.talk();
 
-        john.Move();
-        john.Talk();
+        john.move();
+        john.talk();
 
         /*
         2.Класс Phone.
@@ -35,11 +35,19 @@ public class Main {
         Phone android = new Phone("+49 1515 3287712", "Iphone 10", 400);
         Phone nokia = new Phone("+38 4095 9872809", "Iphone 10", 400);
 
-        nokia.ReceiveCall(john.getFullName());
-        apple.ReceiveCall(peter.getFullName());
+        // выводим значения всех переменных
+        System.out.println(apple.toString());
+        System.out.println(apple.toString());
+        System.out.println(apple.toString());
+
+
+        nokia.receiveCall(john.getFullName());
+        apple.receiveCall(peter.getFullName());
 
         System.out.println(apple.getNumber());
         System.out.println(android.getNumber());
         System.out.println(nokia.getNumber());
+
+
     }
 }
