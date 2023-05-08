@@ -174,6 +174,10 @@ where salary <= (
 	select avg(salary) from employees
 );
 
+select employee_id, first_name, last_name, salary, (select avg(salary) from employees) as avg 
+from employees
+where salary < (select avg(salary) from employees);
+
 /*
 6. print total amount of department
 */
