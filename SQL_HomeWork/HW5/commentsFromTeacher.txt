@@ -1,0 +1,241 @@
+Teacher's comment: Task one:
+Можно группировать сразу в этой же выборке.
+
+
+select t1.userid, sum(t1.quantity*price) 
+from Sales t1
+
+
+left join Product t2
+
+
+on t1.productid = t2.productid
+
+
+group by t1.userid;
+
+
+Task two:
+Можно не делать вложенные таблицы:
+
+
+Возьмем за основу таблицу с прайсами и присоединим количество продаж,
+
+но только те, которые попали в этот период
+
+посчитаем среднюю цену при группировке по id
+
+SELECT a.productid,SUM(b.units*a.price)/SUM(b.units) as average_price
+
+
+FROM Prices as a
+
+
+JOIN UnitsSold as b
+
+
+ON a.productid=b.productid AND (b.purchasedate BETWEEN a.startdate AND a.enddate)
+
+
+GROUP BY productid;
+
+
+Task three:
+Отлично!
+Оригинальное решение, аналогичное :
+
+
+select t3.busid, count(usedbus.mintime) as passengers_cnt
+
+
+from buses t3
+
+
+left join 
+
+
+    (select passengerid, min(t2.arrivaltime) as min_time        
+
+        from passengers t1 join buses t2 
+
+        on t1.arrivaltime <= t2.arrivaltime
+
+        group by passengerid) as used_bus 
+
+on (usedbus.mintime = t3.arrivaltime)
+
+
+group by t3.busid;
+
+
+…………………………………………………………………………………..
+
+
+Дополнительно, задачки с собеседований, решение вместе с ними, если есть желание,
+можете разобраться в них ( описание на английском)
+
+
+===============================================
+Таблица одна на три задачи:
+Taks1 :
+
+
+PROJECT EMPLOEES I
+Create table If Not Exists Project (projectid int, employeeid int)
+Create table If Not Exists Employee (employeeid int, name varchar(10), experienceyears int)
+
+
+insert into Project (projectid, employeeid) values ('1', '1')
+insert into Project (projectid, employeeid) values ('1', '2')
+insert into Project (projectid, employeeid) values ('1', '3')
+insert into Project (projectid, employeeid) values ('2', '1')
+insert into Project (projectid, employeeid) values ('2', '4')
+
+
+insert into Employee (employeeid, name, experienceyears) values ('1', 'Khaled', '3')
+insert into Employee (employeeid, name, experienceyears) values ('2', 'Ali', '2')
+insert into Employee (employeeid, name, experienceyears) values ('3', 'John', '1')
+insert into Employee (employeeid, name, experienceyears) values ('4', 'Doe', '2')
+
+
+Write an SQL query that reports the average experience years of all the employees for each project, rounded to 2 digits.
+
+
+Output: 
++-------------+---------------+
+| projectid  | averageyears |
++-------------+---------------+
+| 1           | 2.00          |
+| 2           | 2.50          |
++-------------+---------------+
+Explanation: The average experience years for the first project is (3 + 2 + 1) / 3 = 2.00 and for the second project is (3 + 2) / 2 = 2.50
+
+
+SOLUTION :
+
+
+SELECT p.projectid,
+ROUND(AVG(e.experienceyears),2) AS averageyears
+FROM Project p
+LEFT JOIN Employee e
+ON p.employeeid = e.employeeid
+GROUP BY p.projectid;
+
+
+===================================================
+Task2 :
+
+
+Write an SQL query that reports all the projects that have the most employees.
+Example:
++-------------+
+| project_id  |
++-------------+
+| 1           |
++-------------+
+
+
+SOLUTIONS :
+
+
+select projectid
+from project 
+group by projectid
+having count(employeeid) = 
+     (select max(cnt) 
+      from (select projectid, count(distinct employeeid) as cnt
+            from project
+            group by projectid) as t1)
+;
+
+
+SELECT projectid
+FROM project
+GROUP BY projectid
+HAVING count(employeeid) =
+(SELECT count(employeeid) as cnt
+FROM project
+GROUP BY projectid
+ORDER BY count(employeeid) DESC
+limit 1);
+
+
+=====================================================
+Task 3
+Write an SQL query that reports the most experienced employees in each project. 
+In case of a tie, report all employees with the maximum number of experience years.
++-------------+---------------+
+| projectid  | employeeid   |
++-------------+---------------+
+| 1           | 1             |
+| 1           | 3             |
+| 2           | 1             |
++-------------+---------------+
+Explanation: Both employees with id 1 and 3 have the most experience among the employees of the first project. For the second project, the employee with id 1 has the most experience.
+
+
+SOLUTIONS :
+
+
+SELECT p1.projectid, p1.employeeid
+FROM Project p1 JOIN Employee e1 ON p1.employeeid = e1.employeeid
+    JOIN (
+        SELECT p2.projectid AS projectid, MAX(e2.experienceyears) as m
+        FROM Project p2 JOIN Employee e2 ON p2.employeeid = e2.employeeid
+        GROUP BY p2.projectid
+        ) AS t ON p1.projectid = t.projectid
+WHERE e1.experience_years = t.m
+
+
+SELECT p.projectid, e.employeeid
+from project as p
+inner join employee as e on e.employeeid = p.employeeid
+where (p.projectid, e.experienceyears) in
+(SELECT p.projectid, max(e.experienceyears)
+from project as p
+inner join employee as e on e.employeeid = p.employeeid
+
+
+group by project_id)
+
+Task 4:
+
+
+User Activity for the Past 30 Days I
+Create table If Not Exists Activity (userid int, sessionid int, activitydate date, activitytype ENUM('opensession', 'endsession', 'scrolldown', 'sendmessage'))
+Truncate table Activity
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('1', '1', '2019-07-20', 'opensession')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('1', '1', '2019-07-20', 'scrolldown')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('1', '1', '2019-07-20', 'endsession')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('2', '4', '2019-07-20', 'opensession')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('2', '4', '2019-07-21', 'sendmessage')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('2', '4', '2019-07-21', 'endsession')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('3', '2', '2019-07-21', 'opensession')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('3', '2', '2019-07-21', 'sendmessage')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('3', '2', '2019-07-21', 'endsession')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('4', '3', '2019-06-25', 'opensession')
+insert into Activity (userid, sessionid, activitydate, activitytype) values ('4', '3', '2019-06-25', 'end_session')
+
+
+Write an SQL query to find the daily active user count for a period of 30 days ending 2019-07-27 inclusively.
+ A user was active on someday if they made at least one activity on that day.
+
+
++------------+--------------+ 
+| day        | active_users |
++------------+--------------+ 
+| 2019-07-20 | 2            |
+| 2019-07-21 | 2            |
++------------+--------------+ 
+
+
+SOLUTIONS :
+
+
+SELECT activitydate AS day, 
+COUNT(DISTINCT userid) AS active_users
+FROM Activity
+
+
+GROUP BY activitydate
+HAVING DATE(activitydate) BETWEEN '2019-06-28' AND '2019-07-27'
