@@ -1,4 +1,11 @@
+/* ---------ОТВЕТ ОТ ПРЕПОДАВАТЕЛЯ -----------------
+Teacher's comment: Отлично! 
+Задача 1. можно не использовать where. Для того что бы включит границы , вместо >= or <= используйте between.
+Задача 2. Вметсто when production_year > 2000 then 'New' - поставить ELSE 'New'.
+*/
+
 use airport;
+select * from tickets;
 /*
 1.Выведите данные о билетах разной ценовой категории. Среди билетов эконом класса (Economy) добавьте в выборку билеты с ценой от 10 000 до 11 000 включительно. 
 Среди билетов комфорт-класса (PremiumEconomy) — билеты с ценой от 20 000 до 30 000 включительно. Среди билетов бизнес-класса (Business) — с ценой строго больше 100 000. 
@@ -25,8 +32,8 @@ order by price;
 select side_number, 
 case
 	when production_year < 2000 then 'Old'
-	when production_year >= 2000 and production_year <=2010 then 'Mid'
-	when production_year > 2000 then 'New'
+	when production_year between 2000 and 2010 then 'Mid'
+	else 'New'
 end
 as age from airliners
 where distance <= 10000

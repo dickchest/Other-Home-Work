@@ -17,6 +17,12 @@ select * from employees where commission_pct is null;
 select * from employees where commission_pct is not null;
 select * from employees where manager_id is null;
 select * from employees where department_id is null;
+/* Символы с оператором like:
+	% - любая последовательность символов
+	_ - ровно один символ
+	[abc] - символ из данного диапазон
+	[^abc] - символ, не входящий в данный диапазон
+*/
 
 select * from departments;
 /* найти все департ у коготорых локейшн айди 1600 и вывести только имя этого департамента */
@@ -295,9 +301,107 @@ alter table goods drop column item_price;
 insert into goods(id, title) (select id+1, title from goods where id = 4);
 
 
-truncate goods;
-select * from goods;
+/* 
+-----------------------------------------------------------------------------------------------------
+2023-07-04
+4 lesson 
+-----------------------------------------------------------------------------------------------------
+*/
+use factory;
 
+/*
+Констрейны:      
+- not null - не нулевое значение
+- unique - значения в этой колонке во всех записях должно быть уникально
+- check (age between 18 and 55) - проверяем диапазон значений
+- primary key = поле котороне уникально иденцифицирует запись в БД (обьединение 2х констрйнов - not null & unique). Только один первичный ключ
+Можно писать:
+	a) id int primary key
+    b) в конце - primary key (id)
+- autoincrement. Если удалить все данные из таблицы после delete - счетчик будет считаьться дальше. В случае truncate - счетчик обнуляется
+- default - значение по умолчанию
 
+*/
 
+create table staff1 (
+	id int primary key auto_increment,
+    first_name varchar(255),
+    last_name varchar (255) unique,
+    age int check (age between 18 and 55),
+    salary int default 1000
+);
 
+create table staff1 (
+	id int auto_increment,
+    first_name varchar(255) not null,
+    last_name varchar (255) unique,
+    age int check (age between 18 and 55),
+    primary key (id)
+);
+
+/*
+контстрейны можно создавать уже после создания таблицы. Нужно изменить существующую колонку: сначала привести таблицу к виду с ограничениями, alter collumn modify с констрейном
+		alter table staff1 modify column first_name varchar(255) not null;
+*/
+update staff1 set first_name = '' where id = 1;
+alter table staff1 modify column first_name varchar(255) not null;
+
+insert into staff1(last_name, age) values ('Maximov', 24); 
+insert into staff1(first_name, last_name, age) values ('Max', 'Maximov1', 24); 
+insert into staff1(id, first_name, last_name, age) values (2, 'Max', 'Maximov2', 24); 
+
+-- 	PRAKTICE ---
+-- create table students, fileds: name - != null, last_name != null, avg_mark (numeric2,1)(0 to 5), gender varchar(1) ("M", "F")
+create table students (
+    name varchar(128) not null,
+    last_name varchar(128) not null,
+    avg_mark numeric(2,1) check (avg_mark between 0 and 5),
+    gender varchar(1) check (gender in ('M', 'F'))
+);
+
+-- Add 5 records
+insert into students values ('Oleg','Olegov', 4.3, 'M'),
+	('Stephan','Stepanov', 3.1, 'M'),
+	('Olga','Stepanova', 4.7, 'F'),
+	('Igor','Romanov', 3.1, 'M'),
+	('Alexandra','Alexandrova', 2.2, 'F');
+
+-- add field id as PK with AI
+alter table students add id int primary key auto_increment;
+
+-- change type gender to char(1)
+alter table students modify gender char(1);
+
+-- rename name to first_name
+alter table students change name first_name varchar(128);
+
+-- find st with mark > 4
+select * from students where avg_mark > 4;
+
+-- find st with mark not in range 3 to 4
+select * from students where avg_mark not between 3 and 4;
+
+-- find st name start with O
+select * from students where first_name like 'O%';
+select * from students where left(first_name, 1) = 'O';
+
+-- find st mark is 2.2, 3.1,4.7
+select * from students where avg_mark in (2.2,3.1,4.7);
+
+-- create view with M
+create view v_male_students as 
+select * from students where gender = 'M';
+select * from v_male_students;
+select * from (select * from students where gender = 'M') as t;
+
+-- create view with F
+create view v_female_students as 
+select * from students where gender = 'F';
+select * from v_female_students;
+
+-- find all distinct mark
+select distinct avg_mark from students;
+
+-- change sptepanova to romanova
+update students set last_name = 'Romanova' where last_name = 'Stepanova';
+select * from students;
