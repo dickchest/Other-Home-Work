@@ -267,6 +267,10 @@ alter table goods modify price numeric(8,2);
 -- CHANGE - переименование поля на другое. Нужно указывать тип данных
 alter table goods change price item_price int; -- change name from price to item_price
 
+-- DROP COLUMN - удаление колонки
+-- DROP COLUMN - удаление колонки
+alter table goods drop column item_price;
+
 -- переменование таблицы
 rename table goods to good;
 rename table good to goods;
