@@ -409,3 +409,245 @@ select distinct avg_mark from students;
 -- change sptepanova to romanova
 update students set last_name = 'Romanova' where last_name = 'Stepanova';
 select * from students;
+
+/* 
+-----------------------------------------------------------------------------------------------------
+2023-07-10
+5 lesson 
+ОБЬЕДИНЕНИЕ ТАБЛИЦ
+-----------------------------------------------------------------------------------------------------
+UNION & UNION ALL
+union = обьединяет 2 таблицы, но убирает дублирующие строки
+union all = если есть дублирующие строки, он их оставляет
+*/
+
+create database plant;
+use plant;
+create table employees (id int, first_name varchar(255), last_name varchar(255), age int, salary int);
+create table staff(
+	id int,
+	first_name varchar(255),
+    last_name varchar(255),
+    age int,
+	staff_type varchar(255)
+);
+insert into employees values (1, 'Alex', 'Aleev', 45, 1000), (2, 'Oleg', 'Olegov', 20, 500);
+select * from employees;
+insert into staff values(1,'Maxim', 'Maximov', 30, 'cleaner'), (2,'Serg', 'Sergeev', 52, 'security');
+select * from staff;
+
+select id, first_name, last_name as surname from employees
+union
+select id, first_name, last_name from staff;
+
+-- замена на константу во второй таблице
+select id, last_name as surname, first_name, salary from employees
+union
+select id, last_name, first_name, 0 from staff;
+
+-- замена на константу в первой таблице
+select id, last_name as surname, first_name, 'worker' as staff_type from employees
+union
+select id, last_name, first_name, staff_type from staff;
+drop table administration;
+create table administration (id int, first_name varchar(251), last_name varchar(255), age int);
+insert into administration values (1,'Maxim', 'Maximov', 30),(2,'Andrew', 'Andreew', 15);
+select * from administration;
+
+-- union removes duplicates
+select id, first_name, last_name, age from staff
+union
+select id, first_name, last_name, age from administration;
+
+-- union all does not remove duplicates 
+select id, first_name, last_name, age from staff
+union all
+select id, first_name, last_name, age from administration;
+
+select id, first_name, last_name, age, 'staff' as type from staff
+union all
+select id, first_name, last_name, age, 'admin personal' from administration;
+
+-- union 3 tables = staff, employees, administration (name, surname, age, type(adm, wrk, stf))
+select first_name as name, last_name as surname, age, 'stf' as type from staff
+union all
+select first_name, last_name, age, 'wrk' from employees
+union all
+select first_name, last_name, age, 'adm' from administration;
+
+
+
+create table goods (id int primary key auto_increment, title varchar(128), quantity int check(quantity between 0 and 10));
+
+insert into goods(title, quantity) values ('bike', 4), ('skis', 5), ('skates', 7), ('skateboard', 2);
+
+create table reserve_goods(id int primary key auto_increment, title varchar(128), price int,quantity int check(quantity between 0 and 10));
+
+insert into reserve_goods (title, price, quantity) values ('bike', 12000, 4), ('skis', 10000,5), ('skates', 6000, 7), ('skateboard', 10000, 2);
+
+-- 1. select all goods from both table, without dublicates, without price
+select id, title, quantity from goods
+union
+select id, title, quantity from reserve_goods;
+
+-- 2. select all goods from both table, all recoreds, without price
+select id, title, quantity from goods
+union all
+select id, title, quantity from reserve_goods;
+
+-- 3. select all goods from both table, all recoreds and price
+select id, title, quantity, 0 as price from goods
+union all
+select id, title, quantity, price from reserve_goods;
+
+select id, title, quantity, 0 as price from goods
+union all
+select id, title, quantity, price from reserve_goods
+order by price desc;
+
+select t1.id, t1.title, t1.price from 
+	(select id, title, quantity, 0 as price from goods
+	union all
+	select id, title, quantity, price from reserve_goods
+	order by price desc) as t1
+where t1.price > 0;
+
+-- ----------------------------------------------------------- 
+-- JOIN ---
+--- INNER JOIN ---
+create database students;
+use students;
+create table students (id int primary key, name varchar(128));
+create table ages (age int, student_id int);
+insert into students values (1,'Alex'), (2,'Oleg'),(3,'Maxim');
+insert into ages values (45, 1), (30, 3);
+select * from students;
+select * from ages;
+
+select t1.id, t1.name, t2.age from students as t1
+inner join ages as t2
+on t1.id = t2.student_id;
+
+create table students_lastname (student_id int, name varchar(128));
+insert into students_lastname values (3,'Maximov'), (1,'Alexeev'),(2,'Olegov');
+select * from students_lastname;
+
+select t1.id, t1.name as first_name, t2.name as last_name from students as t1
+inner join students_lastname as t2
+on t1.id = t2.student_id;
+
+select t1.id, t1.name as first_name, t2.name as last_name, t3.age from students as t1
+inner join students_lastname as t2
+on t1.id = t2.student_id
+inner join ages t3
+on t1.id = t3.student_id;
+
+-- as result: id, first_name, last_name where id > 2
+select t1.id, t1.name as first_name, t2.name as last_name from students as t1
+inner join students_lastname as t2
+on t1.id = t2.student_id and t1.id > 2;
+
+/* 
+-----------------------------------------------------------------------------------------------------
+2023-07-31
+6 lesson 
+ОБЬЕДИНЕНИЕ ТАБЛИЦ - продолжение
+-----------------------------------------------------------------------------------------------------
+*/
+use students;
+select * from students;
+select * from ages;
+select * from students_lastname;
+select * from stats;
+
+create table stats(
+	student_id int not null,
+    rate int check(rate between 0 and 5)
+);
+
+insert into stats (student_id, rate) values (2,5), (1,3);
+
+-- student, rate
+select students.id, students.name, stats.rate
+from students
+inner join stats
+on students.id = stats.student_id;
+
+-- тоже с подзапросами. вывести всех студентов у которых есть статистка
+select * from students where id in (select student_id from stats);
+
+-- добавить колонку в таблицу
+alter table students add course_id int default 0;
+select * from students;
+
+create table courses (
+	id int primary key auto_increment,
+    name varchar(50)
+);
+create table courses_hours(
+	course_id int,
+    hours int
+);
+create table courses_hours_2(
+	name varchar(50),
+    hours int
+);
+insert into courses (name) values ('JAVA'), ('SQL'), ('ALGO');
+select * from courses;
+insert into courses_hours values (1, 60),(2, 50), (3, 40);
+insert into courses_hours_2 values ('JAVA', 60),('SQL', 50), ('ALGO', 40);
+select * from courses_hours;
+select * from courses_hours_2;
+set sql_safe_updates = 0;
+update students set course_id = 1 where id = 2;
+update students set course_id = 3 where id = 1;
+update students set course_id = 2 where id = 3;
+select * from students;
+
+-- students & courses
+select t1.id, t1.name, t2.name from students t1
+inner join courses t2
+on t1.course_id = t2.id;
+
+-- вывести информацию о курсах и продолжительности курсов
+select t1.id, t1.name, t2.hours from courses t1
+inner join courses_hours t2
+on t1.id = t2.course_id;
+
+-- вывести информацию о студентах и курсах и часах
+select t1.id, t1.name, t2.name, t3.hours from students t1
+inner join courses t2 on t1.course_id = t2.id
+inner join courses_hours_2 t3 on t2.name = t3.name;
+
+-- ----------------------------------------------------------- 
+-- Practica with DB HR ---
+use hr;
+show tables;
+-- 1. print name and surname employees and departments name
+select t1.first_name as name, t1.last_name as surname, t2.department_name from employees t1
+inner join departments t2 on t1.department_id = t2.department_id;
+
+-- 2. print name and surname employees and departments name, who works in 'IT', 'IT Support', 'Marketing'
+select t1.first_name as name, t1.last_name as surname, t2.department_name from employees t1
+inner join departments t2 on t1.department_id = t2.department_id and t2.department_name in ('IT', 'IT Support', 'Marketing');
+
+-- 3. print name and surname employees and manager_name and manager_surname their manager
+select t1.first_name as name, t1.last_name as surname, t2.first_name manager_name, t2.last_name manager_surname from employees t1
+inner join employees t2 on t1.manager_id = t2.employee_id;
+
+-- 4. print job_id for employees with salary more then their manager
+select t1.first_name as name, t1.last_name as surname, t1.job_id, t1.salary, t2.first_name manager_name, t2.last_name manager_surname, t2.salary from employees t1
+inner join employees t2 on t1.manager_id = t2.employee_id and t1.salary > t2.salary;
+
+select t1.job_id from employees t1 inner join employees t2 on t1.manager_id = t2.employee_id and t1.salary > t2.salary;
+
+-- 5. Print name, surname, city employees who worked in ('Seattle', 'Toronto')
+select t1.first_name as name, t1.last_name as surname, t3.city from employees t1
+inner join departments t2 on t1.department_id = t2.department_id
+inner join locations t3 on t2.location_id = t3.location_id and t3.city in ('Seattle', 'Toronto');
+
+;
+select * from employees;
+select * from departments;
+select * from locations;
+
