@@ -646,7 +646,6 @@ select t1.first_name as name, t1.last_name as surname, t3.city from employees t1
 inner join departments t2 on t1.department_id = t2.department_id
 inner join locations t3 on t2.location_id = t3.location_id and t3.city in ('Seattle', 'Toronto');
 
-;
 select * from employees;
 select * from departments;
 select * from locations;
