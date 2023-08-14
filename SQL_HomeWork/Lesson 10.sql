@@ -650,3 +650,84 @@ select * from employees;
 select * from departments;
 select * from locations;
 
+/* 
+-----------------------------------------------------------------------------------------------------
+2023-08-07
+7 lesson 
+ДРУГИЕ ТИПЫ JOINOV (LEFT & RIGHT JOIN, FULL JOIN)
+-----------------------------------------------------------------------------------------------------
+*/
+
+use shop;
+show tables;
+
+-- print names of all sellers and their bosses
+select t1.sname seller_name, t2.sname as boss_name from sellers t1
+left join sellers t2 on t1.boss_id = t2.sell_id;
+
+-- -------
+use students;
+show tables;
+insert into students (id, name, course_id) values(4, 'Petr', 2);
+insert into ages values(25,2);
+
+select t1.name, t2.age from students t1
+left join ages t2 on t1.id = t2.student_id;
+
+-- -------
+use shop;
+select * from customers;
+select * from orders;
+select * from sellers;
+
+-- 2. print customers name who spent more then 1000
+select t1.cname name, t2.amt amount from customers t1
+left join orders t2 on t1.CUST_ID = t2.cust_id and t2.amt > 1000;
+
+select t1.cname name, t2.amt amount from customers t1
+inner join orders t2 on t1.CUST_ID = t2.cust_id and t2.amt > 1000;
+
+-- подзапрос
+select cname from customers where cust_id in (select cust_id from orders where amt > 1000);
+
+-- 3. print customer names who made an oder and seller names who sold this order where cust.city<>sell.city
+
+select t2.cname customer_name, t3.sname seller_name , t1.amt amount from orders t1
+inner join customers t2 on t1.cust_id = t2.cust_id
+inner join sellers t3 on t1.SELL_ID = t3.SELL_ID and t2.city <> t3.city;
+
+-- 4. print order id, amount and customers name who made the order
+select t1.order_id, t1.amt, t2.cname customer_name from orders t1
+left join customers t2 on t1.cust_id = t2.cust_id;
+
+-- 5. print all clients and show order
+select t1.cust_id, t1.cname customer_name, t2.order_id, t2.odate order_date, t2.amt amount from customers t1
+left join orders t2 on t1.cust_id = t2.cust_id;
+
+use hr;
+-- 6. print name and department name
+select t1.first_name, t1.last_name, t2.department_id, t2.department_name from employees t1
+left join departments t2 on t1.department_id = t2.department_id;
+
+-- 6. print name and department name where salary more then 15000
+select t1.first_name, t1.last_name, t2.department_id, t2.department_name from employees t1
+left join departments t2 on t1.department_id = t2.department_id 
+where t1.salary > 15000;
+
+-- print postal_code, city, street adress and country name
+select t1.postal_code, t1.street_address, t1.city, t2.country_name from locations t1
+left join countries t2 on t1.country_id = t2.country_id;
+
+-- print department id, depart name & street where it situated
+select t1.department_id, t1.department_name, t2.street_address from departments t1
+left join locations t2 on t1.location_id = t2.location_id;
+
+-- print department_id, name and street where it location and country
+select t1.department_id, t1.department_name, t2.street_address, t3.country_name from departments t1
+left join locations t2 on t1.location_id = t2.location_id
+left join countries t3 on t3.country_id = t2.country_id;
+
+-- print all departments name without any employees
+select t1.department_name, t2.employee_id from departments t1
+left join employees t2 on t1.department_id = t2.department_id
+where t2.employee_id is null;
