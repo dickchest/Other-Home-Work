@@ -731,3 +731,353 @@ left join countries t3 on t3.country_id = t2.country_id;
 select t1.department_name, t2.employee_id from departments t1
 left join employees t2 on t1.department_id = t2.department_id
 where t2.employee_id is null;
+
+/* 
+-----------------------------------------------------------------------------------------------------
+2023-08-14
+8 lesson
+-----------------------------------------------------------------------------------------------------
+*/
+use shop;
+show tables;
+
+-- 6. Print all sellers name and their boss name
+select t1.sname, t2.sname boss_name from sellers t1
+left join sellers t2 on t1.boss_id = t2.sell_id;
+
+-- 7. print customer name and seller name and their city, where cust city = seller city
+select t2.cname customer_name, t3.sname seller_name, t2.city from orders t1
+inner join customers t2 on t1.cust_id = t2.cust_id
+inner join sellers t3 on t1.sell_id = t3.sell_id
+where t2.city = t3.city;
+
+-- 8. print seller name, difference boss com and seller comm
+select * from sellers;
+select * from customers;
+select * from orders;
+select t1.sname seller_name, t2.sname boss_name, t2.comm - t1.comm as difference  from sellers t1
+left join sellers t2 on t1.boss_id = t2.sell_id;
+
+-- -----------------------------------
+use university;
+show tables;
+
+-- 1. print students name and course name which they take
+select t1.name, t3.title from students t1
+inner join students2courses t2 on t1.id = t2.student_id
+inner join courses t3 on t2.course_id = t3.id;
+
+-- 2. print all teachers name and their competencies
+select t1.name, t3.title from teachers t1
+left join teachers2competencies t2 on t2.teacher_id = t1.id
+left join competencies t3 on t3.id = t2.competencies_id;
+
+-- 3. print teachers name without any competencies
+select t1.name from teachers t1
+left join teachers2competencies t2 on t2.teacher_id = t1.id
+where t2.id is null;
+
+-- 4. Print students name without any courses
+select t1.name from students t1
+left join students2courses t2 on t1.id = t2.student_id
+where t2.id is null;
+
+-- 5. Print courses title without any students
+select t1.title from courses t1
+left join students2courses t2 on t1.id = t2.course_id
+where t2.id is null;
+
+-- 6. Print competencies title without any teachers
+select t1.title, t2.id from competencies t1
+left join teachers2competencies t2 on t1.id = t2.competencies_id
+where t2.id is null;
+
+-- 7. Print course title and student who is a headman
+select t1.title, t2.name from courses t1
+inner join students t2 on t1.headman_id = t2.id;
+
+/* 
+-----------------------------------------------------------------------------------------------------
+2023-08-21
+9 lesson
+DATA TIME
+-----------------------------------------------------------------------------------------------------
+*/
+use shop;
+
+-- DATE
+-- TIME
+-- YEAR
+-- DATETIME
+-- TIMESTAMP (милисекунды)
+
+select now(); 
+select sysdate();
+select curdate();
+select curtime();
+
+
+select month(ODATE) from orders;
+select day(ODATE) from orders;
+select weekday(ODATE) from orders;
+select year(ODATE) from orders;
+select monthname(ODATE) from orders;select weekday(odate) from orders;
+select weekday(odate) number_day, dayname(odate) name_day from orders; -- дни недели формируются с нуля
+
+-- 1. Print all orders in March
+select * from orders where month(odate) = 3;
+select * from orders where monthname(odate) = 'march';
+
+-- 2. Print all orders beetween 10.04.22 and 10.05.22
+select * from orders where date(odate) between '2022-04-10' and '2022-05-10';
+
+select * from orders where weekday(odate) = 1;
+
+-- extract сначала преобразовывает строку к типу данных, а потом выдает желаемый результат
+select extract(day from '2023-05-24');
+select extract(month from '2023-05-24');
+select extract(year from '2023-05-24');
+select extract(hour from '2023-05-24 20:41:35');
+select extract(minute from '2023-05-24 20:41:35');
+select extract(second from '2023-05-24 20:41:35');
+
+-- прибавление и вычитание к дате
+select date_add('2022-05-10', interval 5 day);
+select date_add('2022-05-10', interval -5 day);
+select date_sub('2022-05-10', interval 5 day);
+
+select date_add('2022-05-10', interval 2 month);
+
+select datediff('2022-05-10', '2022-05-16');
+
+select str_to_date('2022-07-10', '%Y-%m-%d');
+select str_to_date('2022-07-10 20:41:35', '%Y-%m-%d %H:%i:%s');
+
+/* =====================
+АГРЕГАТНЫЕ ФУНКЦИИ
+*/
+-- max()
+select max(amt) from orders;
+
+-- min()
+select min(amt) from orders;
+
+-- sum()
+select sum(amt) from orders;
+
+-- avg() - среднее значение
+select avg(amt) from orders;
+
+-- count() 
+-- count(*) - count all string in table
+select count(*) from orders; 
+-- count(column) - count not null
+select count(amt) from orders;
+
+select count(*) from sellers;
+select count(boss_id) from sellers;
+
+-- если выбрать колонки и применить к ней агрегатную функцию, применить селект к другим полям не получиться
+-- т.к. результатом работы агрегатной фукнции возвращает только одно значение.
+
+use hr;
+ -- 1. print max salary from employees
+ select max(salary) from employees;
+ 
+ -- 2. print count of employees
+ select count(*) from employees;
+ 
+ -- 3. print avarage salary by company
+ select avg(salary) from employees;
+ 
+ -- 4. print name and surname employee who has max salary
+ select first_name, last_name, salary from employees
+ where salary = (
+	select max(salary) from employees
+    );
+
+-- 5. print all employees (first_name, last_name, salary) with salary less then avg salary by company
+select first_name, last_name, salary from employees
+where salary < (select avg(salary) from employees);
+
+-- 6. print count of departments without any employees
+select count(*) from (
+	select t1.department_id, department_name from employees t1
+	right join departments t2
+	on t1.department_id = t2.department_id where t1.department_id is null
+) t3;
+
+select count(*) as departments_count from departments t1
+left join employees t2
+on t1.department_id = t2.department_id
+where t2.employee_id is null;
+
+-- 7. print max salary for employees in departments with id 70 and 80
+select max(salary) from employees where department_id in (70, 80);
+
+-- 8. print count of employees from department with id 100, with salary more than 5000
+select count(*) from employees where department_id = 100 and salary > 5000;
+
+-- 9. print count of employees from department with id 60, with salary more than avg salary by company
+select * from employees where department_id = 60 and salary > (
+	select avg(salary) from employees
+);
+
+-- 10 print count of employees in every department - id dept, count
+select department_id, count(*) as department_count from employees
+group by department_id;
+
+use shop;
+-- 11 print count of order in every month
+select * from orders;
+select month(odate) month, count(*) from orders group by month;
+
+/* 
+-----------------------------------------------------------------------------------------------------
+2023-08-28
+10 lesson
+GROUP, HAVING
+-----------------------------------------------------------------------------------------------------
+*/
+use hr;
+
+select department_id, max(salary) max from employees
+group by department_id
+having max > 10000;
+-- тоже что и 
+select t1.department_id, t1.salary from (
+	select department_id, max(salary) salary from employees
+    group by department_id) t1
+where t1.salary > 10000;
+
+-- 12 print count of employees in every department - id dept, count where count of employeers > 10
+select department_id, count(*) as empl_count from employees
+group by department_id 
+having count(*) > 10;
+
+-- 13 print all departments name with employees > 10;
+select t1.department_name from departments t1
+where department_id in (
+	select department_id from employees
+	group by department_id 
+	having count(*) > 10
+);
+-- or
+select t1.department_name from departments t1
+inner join (
+	select department_id from employees
+	group by department_id 
+	having count(*) > 10
+) t2
+on t2.department_id = t1.department_id;
+-- or
+select t2.department_name, count(*) from employees t1
+inner join departments t2 on t2.department_id = t1.department_id
+group by t2.department_name
+having count(*) > 10;
+
+-- 14 print all departments name with quontity > average - avg-> count(*) group by deparment_id
+select t2.department_name, count(*) from employees t1
+inner join departments t2 on t2.department_id = t1.department_id
+group by t2.department_name
+having count(*) > (
+	select avg(t3.cnt) from (
+		select count(*) as cnt from employees
+		group by department_id
+	) t3
+);
+
+-- 15 print name and surname for employees with max salary in their departments
+select t1.first_name as name, t1.last_name surname, t1.department_id, t1.salary from employees t1
+inner join (
+	select department_id, max(salary) as salary from employees
+	group by department_id
+) t2 on t1.department_id = t2.department_id and t1.salary = t2.salary
+order by department_id;
+
+-- 16 print info about department with maximum count of employees
+
+select * from departments t2
+inner join (
+	select department_id, count(*) count from employees
+	group by department_id
+    order by count desc limit 1) t1 on t2.department_id = t1.department_id;
+
+
+select department_id, count(*) cnt from employees
+group by department_id
+having cnt = (
+	select max(t1.count) as max_employees_cnt from (
+		select department_id, count(*) count from employees
+		group by department_id
+	) t1
+);
+
+-- teacher versions
+select max(t1.employees_cnt) as max_employees_cnt
+from (
+ select department_id, count(*) as employees_cnt
+ from employees
+ group by department_id) t1;
+
+select * from departments    
+where department_id = (
+     select department_id
+  from employees
+  group by department_id
+  having count(*) = (select max(t1.employees_cnt) as max_employees_cnt
+      from (
+        select department_id, count(*) as employees_cnt
+        from employees
+        group by department_id) t1));
+
+/* 
+-----------------------------------------------------------------------------------------------------
+НОРМАЛИЗАЦИЯ БАЗЫ ДАННЫХ
+-----------------------------------------------------------------------------------------------------
+*/
+/*
+8 НОРМЛАЬНЫХ ФОРМ
+НУЖНО ЗНАТЬ ТОЛЬКО 3
+----
+1NF :
+1Я НОРМАЛЬНАЯ ФОРМА - ЗНАЧЕНИЕ КОЛОНКИ ДОЛЖНО БЫТЬ АТОМАРНЫМ
+НЕ ДОЛЖНО БЫТЬ СОСТАВНЫХ ЗНАЧЕНИЙ
+ID|       FIO      |    TEL
+1 | Ivanov Sergei  | +9055555
+2 | Maximov Sergei | +902222
+
+ID| SURNAME | NAME  |    TEL
+1 | Ivanov 	|Sergei | +9055555
+2 | Maximov |Sergei | +902222
+----
+
+2NF : (1NF + PK)
+2 НОРМ ФОРМА - В ЛЮБОЙ ТАБЛИЦЕ ДОЛЖНЕ СУЩЕСТВ ПЕРВИЧНЫЙ КЛЮЧ + ПЛЮС СОТВ. ПЕРВОЙ НОРМАЛЬНОЙ ФОРМЕ
+----
+
+3NF : (2NF + not nontransitive dependencies)
+ВТОРАЯ НФ + в таблице не существуют полей, кот. не зависят от первичныого ключа
+STUDENT
+ID| SURNAME | NAME  | CONTACT_id
+1 | Ivanov 	|Sergei |   1
+2 | Maximov |Sergei |   2
+
+CONTACT
+ID|   TEL     | PROVIDER
+1 | +9055555  | ORANG
+2 | +902222   | T-MOBILE
+
+select t1.name, t1.surname, t2.tel, t2.provider from student t1
+inner join contact t2 on t1.contact_id = t2.id;
+
+Первичные ключи есть натуральные и сгенерированные
+
+FOREIGN KEY
+
+ID | NAME | COURSE | COURSE_SESCR
+1. | ALEX | JAVA   | JAVA PROF
+
+
+
+*/
